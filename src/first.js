@@ -1,3 +1,3 @@
-export default function (st) {
+export function echo (st) {
   console.log(st);
 }

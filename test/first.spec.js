@@ -1,4 +1,4 @@
-import echo from 'src/first';
+import { echo } from '../src/first';
 
 describe('First test', () => {
     it('should be ok', () => {

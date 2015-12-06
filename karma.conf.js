@@ -1,38 +1,32 @@
 module.exports = function (config) {
   config.set({
     browsers: ['PhantomJS'],
-    files: ['src/**/*.js', 'test/**/*.spec.js'],
+    files: [
+      'test/index.js'
+    ],
     frameworks: ['mocha', 'chai', 'sinon'],
     preprocessors: {
-      'src/**/*.js': ['babel','webpack'],
-      'test/**/*.spec.js': ['babel', 'webpack', 'sourcemap']
-    },
-    babelPreprocessor: {
-      options: {
-        presets: ['es2015'],
-        sourceMap: 'inline'
-      },
-      filename: function (file) {
-        return file.originalPath.replace(/\.js$/, '.es5.js');
-      },
-      sourceFileName: function (file) {
-        return file.originalPath;
-      }
+      'test/**/*.js': ['webpack', 'sourcemap']
     },
     webpack: {
+      resolve: {
+        extensions: ['', '.js']
+      },
       module: {
-         loaders: [
-          {
-            test: /\.spec.js$/,
-            loader: 'babel-loader'
-
-            query: {
-                  cacheDirectory: true,
-                  presets: ['es2015']
-            }
+        devtool: 'inline-source-map',
+       loaders: [
+        {
+          test: /\.js$/,
+          exclude: /(bower_components|node_modules)/,
+          loader: 'babel-loader',
+          query: {
+            //cacheDirectory: true,
+            presets: ['es2015', 'stage-2']
           }
-         ]
+        }
+       ]
       }
-    }
+    },
+    webpackMiddleware: { noInfo: true }
   });
 };
