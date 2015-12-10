@@ -13,9 +13,9 @@ xanta.getDestination = function (floorsCode) {
       console.log(`Xanta is at the basement for the first time at the ${index}. step.`);
       checkBasement = false;
     }
-  };
+  }
   return state;
-}
+};
 
 function* getFloor (floorsCode) {
   let state = 0;
@@ -25,11 +25,10 @@ function* getFloor (floorsCode) {
       state++;
     }
     else {
-      state--
+      state--;
     }
     yield state;
   }
-  console.log('state:', state);
 }
 
 export default xanta;
