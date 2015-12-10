@@ -1,7 +1,25 @@
-export default function (floorsCode) {
+var xanta = {};
+
+xanta.getDestination = function (floorsCode) {
   if (floorsCode === '') return 0;
-  let state = 0;
   
+  let state, 
+      index = 0, 
+      checkBasement = true;
+  
+  for (state of getFloor(floorsCode)) {
+    index++;
+    if (state === -1 && checkBasement) {
+      console.log(`Xanta is at the basement for the first time at the ${index}. step.`);
+      checkBasement = false;
+    }
+  };
+  return state;
+}
+
+function* getFloor (floorsCode) {
+  let state = 0;
+
   for (let paren of floorsCode) {
     if (paren === '(') {
       state++;
@@ -9,7 +27,9 @@ export default function (floorsCode) {
     else {
       state--
     }
+    yield state;
   }
   console.log('state:', state);
-  return state;
 }
+
+export default xanta;
