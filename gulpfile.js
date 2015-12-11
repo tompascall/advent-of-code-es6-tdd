@@ -7,7 +7,6 @@ const gulp = require('gulp'),
 
 gulp.task('lint', function () {
   return gulp.src(['src/**/*.js', 'test/**/*.spec.js'])
-//    .pipe(watch(['src/**/*.js', 'test/**/*.spec.js']))
     .pipe(eslint())
     .pipe(eslint.format());
 });
