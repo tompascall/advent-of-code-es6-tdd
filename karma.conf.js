@@ -20,8 +20,7 @@ module.exports = function (config) {
           exclude: /(bower_components|node_modules)/,
           loader: 'babel-loader',
           query: {
-            //cacheDirectory: true,
-            presets: ['es2015', 'stage-2']
+            presets: ['es2015']
           }
         }
        ]

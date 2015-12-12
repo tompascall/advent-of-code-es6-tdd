@@ -12,8 +12,14 @@ describe('test coords', () => {
     expect(coords.currentCoords.y).to.equal(0); 
   });
 
+  it('should set position', () => {
+    coords.currentCoords = {x: 1, y: 1};
+    expect(coords.currentCoords.x).to.equal(1); 
+    expect(coords.currentCoords.y).to.equal(1); 
+  });
+
   it('should save current position', () => {
-    expect(coords.savedCoords['0;0']).to.equal(1);
+    expect(coords.savedCoords['0;0']).to.equal(1); // constructor saves the first position
     coords.currentCoords = {x: 1, y: 1};
     coords.saveCoord();
     expect(coords.savedCoords['1;1']).to.equal(1); 
