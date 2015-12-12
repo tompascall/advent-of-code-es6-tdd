@@ -1,5 +1,5 @@
-import wrapper from './wrapper_paper'
-console.log(wrapper.calc(`20x3x11
+import wrapper from './wrapper_paper';
+let result = wrapper.calc(`20x3x11
 15x27x5
 6x29x7
 30x15x9
@@ -998,5 +998,8 @@ console.log(wrapper.calc(`20x3x11
 10x1x18
 29x4x8
 21x2x22
-14x12x8`));
+14x12x8`);
+
+console.log('Paper:', result.paper);
+console.log('Ribbon:', result.ribbon);
 

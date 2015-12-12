@@ -2,9 +2,15 @@ var wrapper = {};
 
 wrapper.calc = function (boxDimensions) {
   let boxes = getBoxes(boxDimensions);
-  let result = 0;
+  let result = {
+    paper: 0,
+    ribbon: 0
+  };
+
   for (let box of boxes) {
-    result += calcOneBox(box);
+    let oneBoxResult = calcOneBox(box);
+    result.paper += oneBoxResult.paper;
+    result.ribbon += oneBoxResult.ribbon;
   }
   return result;
 };
@@ -15,8 +21,21 @@ function getBoxes(boxDimensions) {
 
 function calcOneBox (box) {
   let lengths = getSideLengths(box);
-  let minSide = getMinSide(lengths);
-  return minSide + 2 * (lengths[0] * lengths[1] + lengths[0] * lengths[2] + lengths[1] * lengths[2]);
+  let minSideSurface = getMinSideSurface(lengths);
+  let result = {
+    paper: minSideSurface + 2 * (lengths[0] * lengths[1] + lengths[0] * lengths[2] + lengths[1] * lengths[2]),
+    ribbon: getMinPerimeter(lengths) + getCubic(lengths)
+  }; 
+  return result;
+}
+
+function getCubic (lengths) {
+  return lengths.reduce( (prev, curr) => prev * curr, 1);
+}
+
+function getMinPerimeter(lengths) {
+  let twoSmallestSide = getTwoSmallestSide(lengths);
+  return 2 * (twoSmallestSide[0] + twoSmallestSide[1]);
 }
 
 function getSideLengths (boxDimensions) {
@@ -26,7 +45,7 @@ function getSideLengths (boxDimensions) {
   return dims.map( dim => parseInt(dim) );
 }
 
-function getMinSide(lengths) {
+function getMinSideSurface(lengths) {
   let twoSmallestSide = getTwoSmallestSide(lengths);
   return twoSmallestSide[0] * twoSmallestSide[1];
 }
