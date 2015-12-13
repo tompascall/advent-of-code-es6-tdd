@@ -1,16 +1,17 @@
-var xanta = {};
+let xanta = {};
 
 xanta.getDestination = function (floorsCode) {
-  if (floorsCode === '') return 0;
-  
-  let state, 
+
+  let state = { current: 0}, 
       index = 0, 
       checkBasement = true;
-  
-  for (state of getFloor(floorsCode)) {
+
+  if (floorsCode === '') return state;
+
+  for (state.current of getFloor(floorsCode)) {
     index++;
-    if (state === -1 && checkBasement) {
-      console.log(`Xanta is at the basement for the first time at the ${index}. step.`);
+    if (state.current === -1 && checkBasement) {
+      state.basementStep = index;
       checkBasement = false;
     }
   }
