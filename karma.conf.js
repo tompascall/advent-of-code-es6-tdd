@@ -12,8 +12,8 @@ module.exports = function (config) {
       resolve: {
         extensions: ['', '.js']
       },
+      devtool: 'inline-source-map',
       module: {
-        devtool: 'inline-source-map',
        loaders: [
         {
           test: /\.js$/,
