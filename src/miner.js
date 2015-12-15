@@ -17,6 +17,7 @@ miner.getCoin = function (options = {}) {
     index++;
   }
   miner.index = index;
+  miner.hash = hash;
   return miner;
 }
 
