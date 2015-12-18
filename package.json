@@ -1,9 +1,13 @@
 {
-  "name": "boiler",
+  "name": "advent-of-code-es6-tdd",
   "version": "0.0.1",
-  "description": "Simple boilerplate to play with es6 features",
+  "description": "Playing with es6 features and solving funny puzzles of adventofcode.com",
   "scripts": {
-    "test": "mocha --compilers js:babel-register"
+    "test": "gulp karma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tompascall/advent-of-code-es6-tdd.git"
   },
   "author": "tompascall",
   "license": "ISC",
@@ -15,7 +19,6 @@
     "babel-preset-stage-2": "^6.3.13",
     "blueimp-md5": "^1.1.1",
     "chai": "^3.4.1",
-    "crypto-js": "^3.1.5",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
     "gulp-batch": "^1.0.5",
