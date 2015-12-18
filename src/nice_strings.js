@@ -27,7 +27,7 @@ nice.checkWord = function (word) {
         /pq/.test(word) ||
         /xy/.test(word));
   }
-}
+};
 
 nice.processor = function (input, method) {
   let words = input.split('\n'),

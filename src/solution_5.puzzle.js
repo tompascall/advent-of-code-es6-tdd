@@ -1002,6 +1002,6 @@ phdqqxleqdjfgfbg
 cqfikbgxvjmnfncy`;
 
 let hits_simple = nice.processor(input, nice.checkWord);
-let hits_better = nice.processor(input, nice.betterCheck)
+let hits_better = nice.processor(input, nice.betterCheck);
 console.log(`There are ${hits_simple} simple nice words`);
-console.log(`There are ${hits_better} better nice words`)
+console.log(`There are ${hits_better} better nice words`);

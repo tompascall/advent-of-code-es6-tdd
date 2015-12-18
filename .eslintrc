@@ -12,7 +12,8 @@
           2,
           "always"
       ],
-      "no-console": 0
+      "no-console": 0,
+      "no-constant-condition" : 1
   },
   "extends": "eslint:recommended",
   "ecmaFeatures": {
