@@ -6,11 +6,11 @@ In this project we solve some of the [advent of code](http://adventofcode.com) p
 
 The solutions are in the `src` library. You can show them by running `babel-node src/<solution-file>` from the project library.
 
-###Prerequisities
+###Prerequisites
 
 Clone the project and **install the npm packages** (via `npm install`).
 
-You need installed globally
+You need to install globally
 - Node
 - Gulp
 - babel-node
