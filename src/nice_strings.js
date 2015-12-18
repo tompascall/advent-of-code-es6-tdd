@@ -29,16 +29,41 @@ nice.checkWord = function (word) {
   }
 }
 
-nice.processor = function (input) {
+nice.processor = function (input, method) {
   let words = input.split('\n'),
       counter = 0;
   
   for (let word of words) {
-    if (nice.checkWord(word)) {
+    if (method(word)) {
       counter++;
     }
   }
   return counter;
+};
+
+nice.betterCheck = function (word) {
+  return checkDoubles(word) && checkBurgerPattern(word);
+
+  function checkDoubles (word) {
+    let firstTwo = word.slice(0,2);
+    let remainedWord = word.slice(2);
+    if ( remainedWord.includes(firstTwo) ) {
+      //console.log('true', remainedWord, firstTwo);
+      return true;
+    }
+    if ( remainedWord.length > 2) {
+      //console.log('iterate', remainedWord, firstTwo);
+      return checkDoubles(word.slice(1));
+    }
+    else {
+      return false;
+    }
+  }
+
+  function checkBurgerPattern (word) {
+    let reg = /([a-z])[a-z]\1/;
+    return reg.test(word);
+  }
 };
 
 export default nice;

@@ -1,6 +1,6 @@
 import nice from './nice_strings';
 
-let hits = nice.processor(`zgsnvdmlfuplrubt
+let input = `zgsnvdmlfuplrubt
 vlhagaovgqjmgvwq
 ffumlmqwfcsyqpss
 zztdcqzqddaazdjp
@@ -999,5 +999,9 @@ hjsrvkdibdjarxxb
 sztzziuqroeidcus
 pxdfvcpvwaddrzwv
 phdqqxleqdjfgfbg
-cqfikbgxvjmnfncy`);
-console.log(`There are ${hits} nice words`);
+cqfikbgxvjmnfncy`;
+
+let hits_simple = nice.processor(input, nice.checkWord);
+let hits_better = nice.processor(input, nice.betterCheck)
+console.log(`There are ${hits_simple} simple nice words`);
+console.log(`There are ${hits_better} better nice words`)

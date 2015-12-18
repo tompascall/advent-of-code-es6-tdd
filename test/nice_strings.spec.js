@@ -14,7 +14,7 @@ describe('checking nice strings', () => {
     expect(nice_strings.checkWord('aemor')).to.equal(false);
   });
 
-  it('should check ab, cd, pq, xy', () => {
+  it('should be false if there is ab, cd, pq, xy', () => {
     expect(nice_strings.checkWord('aabemor')).to.equal(false);
     expect(nice_strings.checkWord('aacdemor')).to.equal(false);
     expect(nice_strings.checkWord('aapqmor')).to.equal(false);
@@ -23,9 +23,24 @@ describe('checking nice strings', () => {
 
   it('should process words input', () => {
     sinon.spy(nice_strings, 'checkWord');
-    let niceWords = nice_strings.processor('aaemor\nsdfg\ndfgh');
+    let niceWords = nice_strings.processor('aaemor\nsdfg\ndfgh', nice_strings.checkWord);
     expect(niceWords).to.equal(1);
     expect(nice_strings.checkWord.callCount).to.equal(3);
     nice_strings.checkWord.restore();
+  });
+});
+
+describe('check better check', () => {
+  it('should check doubles', () => {
+    expect(nice_strings.betterCheck('xyxy')).to.equal(true);
+    expect(nice_strings.betterCheck('xaaazx')).to.equal(false);
+    expect(nice_strings.betterCheck('xyzxyzy')).to.equal(true);
+  });
+
+  it('should check burger pattern', () => {
+    expect(nice_strings.betterCheck('xyxzxy')).to.equal(true);
+    expect(nice_strings.betterCheck('xyaaxy')).to.equal(false);
+    expect(nice_strings.betterCheck('xyaaaxy')).to.equal(true);
+    expect(nice_strings.betterCheck('xyxy')).to.equal(true);
   });
 });
