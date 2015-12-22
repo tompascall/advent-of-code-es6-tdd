@@ -19,5 +19,21 @@ circuits.createWireInputs = function (input) { // input form: <instruction> -> <
   return wireInputs;
 }; 
 
+circuits.makePromises = function (wireInputs) {
+  let wireNames = Object.keys(wireInputs);
+  for (let wireName of wireNames) { // e.g. x
+    let wire = wireInputs[wireName];
+    let instruction = wire.instruction;
+    if ( !isNaN(instruction) ) {
+      circuits.makeSimpleValuePromise(wire);
+    }
+  }
+};
+
+circuits.makeSimpleValuePromise = function (wire) {
+  wire.value = new Promise( (resolve) => {
+    resolve(Number(wire.instruction));
+  })
+};
 
 export default circuits;

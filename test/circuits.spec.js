@@ -22,7 +22,7 @@ describe('test day 7 puzzle: circuits', () => {
                  456 -> y`;
     let wireInputs = circuits.createWireInputs(input);
     circuits.makePromises(wireInputs);
-    return wireInputs.x.value().then( (value) => {
+    return wireInputs.x.value.then( (value) => {
       expect(value).to.equal(123);
     })
   });
