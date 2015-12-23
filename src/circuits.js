@@ -3,19 +3,18 @@ let circuits = {};
 circuits.createWires = function (input) { // input form: <instruction> -> <token>\n
   let rows = input.split('\n');
   let wires = {};
-  let reg = /(\S[\w\d\s]+\S)\s*\-\>\s*(\w+)/;
+  let reg = /([\w\d\s]*\S)\s*\-\>\s*(\w+)/;
   for (let row of rows) {
     let instruction, wireName;
     let extracts = row.match(reg);
-    instruction = extracts[1];
-    wireName = extracts[2];
-    if (extracts) { 
+    if (true) {
+      instruction = extracts[1];
+      wireName = extracts[2];
       wires[ wireName ] = {
         instruction: instruction
       };
     }
   }
-  console.log(wires);
   return wires;
 }; 
 
@@ -31,7 +30,7 @@ circuits.makePromise = function (wires, wire) {
     if (typeof wire.value === 'undefined') {
       let instruction = circuits.tokenizeInstruction(wire.instruction);
       if ( instruction.length === 1) {  // it must be a simple value
-        circuits.makeSimpleValuePromise(wire);
+        circuits.makeSimpleValuePromise(wires, wire);
       }
       else if (instruction[0] === 'NOT') {
         circuits.make_NOT_Promise(wires, wire, instruction);
@@ -45,6 +44,12 @@ circuits.makePromise = function (wires, wire) {
       else if (instruction[1] === 'OR') {
         circuits.make_OR_Promise(wires, wire, instruction);
       }
+      else if (instruction[1] === 'AND') {
+        circuits.make_AND_Promise(wires, wire, instruction);
+      }
+      else {
+        throw new Error(instruction[1], 'unknown token');
+      }
     }
 };
 
@@ -56,10 +61,18 @@ circuits.tokenizeInstruction = function (instruction) {
   }
 };
 
-circuits.makeSimpleValuePromise = function (wire) {
-  wire.value = new Promise( (resolve) => {
-    resolve(Number(wire.instruction));
-  })
+circuits.makeSimpleValuePromise = function (wires, wire) {
+  if (!isNaN(wire.instruction)) { 
+    wire.value = new Promise( (resolve) => {
+      resolve(Number(wire.instruction));
+    });
+  } 
+  else if ( typeof wires[ wire.instruction ].value === 'undefined') {
+    circuits.makePromise(wires, wires[ wire.instruction ]);
+    wire.value = new Promise( (resolve) => {
+      resolve(wires[ wire.instruction].value);
+    }); 
+  }
 };
 
 circuits.make_NOT_Promise = function (wires, wire, instruction) {
@@ -110,4 +123,39 @@ circuits.make_OR_Promise = function (wires, wire, instruction) {
   });
 };
 
+circuits.make_AND_Promise = function (wires, wire, instruction) {
+  let promises = [];
+  wire.value = new Promise( (resolve) => {
+    if ( !isNaN(instruction[0]) ) {
+      let simpleValuePromise = new Promise( (resolve) => {
+        resolve(Number(instruction[0]));
+      })
+      promises.push(simpleValuePromise);
+    }
+    else if ( typeof wires [ instruction[0] ].value === 'undefined') {
+      circuits.makePromise(wires, wires[ instruction[0] ]);
+      promises.push(wires[ instruction[0] ].value);
+    }
+    else {
+      promises.push(wires[ instruction[0] ].value);
+    }
+
+    
+    if ( !isNaN(instruction[2]) ) {
+      promises.push(new Promise( (resolve) => {
+        resolve(Number(instruction[2]));
+      }));
+    }
+    else if ( typeof wires [ instruction[2] ].value === 'undefined') {
+      circuits.makePromise(wires, wires[ instruction[2] ]);
+      promises.push(wires[ instruction[2] ].value);
+    }
+    else {
+      promises.push(wires[ instruction[2] ].value);
+    }
+    Promise.all(promises).then(results => {
+      resolve(results[0] & results[1]);
+    });
+  });
+};
 export default circuits;
