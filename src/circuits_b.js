@@ -2,20 +2,31 @@ let circuits = {};
 
 circuits.createWires = function (input) { // input form: <instruction> -> <token>\n
   let rows = input.split('\n');
-  let wires = {};
-  let reg = /([\w\d\s]*\S)\s*\-\>\s*(\w+)/;
+  let wires = {},
+      wireData;
+
   for (let row of rows) {
+    wireData = getWireDataFromRow(row);
+    wires[ wireData.wireName ] = {
+      instruction: wireData.instruction
+    };
+  }
+  
+  return wires;
+
+  function getWireDataFromRow (row) {
+    let reg = /([\w\d\s]*\S)\s*\-\>\s*(\w+)/;
     let instruction, wireName;
     let extracts = row.match(reg);
-    if (true) {
+    if (extracts) {
       instruction = extracts[1];
       wireName = extracts[2];
-      wires[ wireName ] = {
-        instruction: instruction
-      };
+      return { wireName: wireName, instruction: instruction }; 
+    }
+    else {
+      throw new Error('Bad input format /input format shoud be <instruction> -> <token>\n/');
     }
   }
-  return wires;
 }; 
 
 circuits.makeValues = function (wires) {
@@ -27,106 +38,109 @@ circuits.makeValues = function (wires) {
 };
 
 circuits.makeValue = function (wires, wire) {
-    if (typeof wire.value === 'undefined') {
-      let instruction = circuits.tokenizeInstruction(wire.instruction);
-      if ( instruction.length === 1) {  // it must be a simple value
-        circuits.makeSimpleValue(wires, wire);
-      }
-      else if (instruction[0] === 'NOT') {
-        circuits.make_NOT_Value(wires, wire, instruction);
-      }
-      else if (instruction[1] === 'LSHIFT') {
-         circuits.make_LSHIFT_Value(wires, wire, instruction);
-      }
-      else if (instruction[1] === 'RSHIFT') {
-         circuits.make_RSHIFT_Value(wires, wire, instruction);
-      }
-      else if (instruction[1] === 'OR') {
-        circuits.make_OR_Value(wires, wire, instruction);
-      }
-      else if (instruction[1] === 'AND') {
-        circuits.make_AND_Value(wires, wire, instruction);
-      }
-      else {
-        throw new Error(instruction[1], 'unknown token');
-      }
-    }
-};
+  let instructionsWithTwoOperands = ['LSHIFT', 'RSHIFT', 'OR', 'AND'];
+  if (typeof wire.value === 'undefined') {
+    let instruction = tokenizeInstruction(wire.instruction);
 
-circuits.tokenizeInstruction = function (instruction) {
-  let reg = /([\d\w]+)/g;
-  let tokens = instruction.match(reg);
-  if (tokens) {
-    return tokens;
+    if (instruction.length === 1) { // it must be a simple value or another wire
+      circuits.makeSimpleValue(wires, wire);
+    }
+    else if (instruction.length === 2) { // for the moment the only case is the NOT instruction
+      circuits.make_NOT_Value(wires, wire, instruction);
+    }
+    else if (instruction.length === 3 && instructionsWithTwoOperands.indexOf( instruction[1] ) > -1) {
+      circuits['make_' + instruction[1] + '_Value'](wires, wire, instruction);
+    }
+    else throw new Error('Unknown token');
+  }
+
+  function tokenizeInstruction (instruction) {
+    let reg = /([\d\w]+)/g;
+    let tokens = instruction.match(reg);
+    if (tokens) {
+      return tokens;
+    }
   }
 };
 
 circuits.makeSimpleValue = function (wires, wire) {
   if ( !isNaN(wire.instruction) ) { // it is a simple number
-    wire.value = Number(wire.instruction);
+    let simpleValue = Number(wire.instruction);
+    wire.value = simpleValue;
   } 
-  else if ( typeof wires[ wire.instruction ].value === 'undefined') {
-    circuits.makeValue(wires, wires[ wire.instruction ]);
-    wire.value = wires[ wire.instruction ].value;
+  else {
+    let producerWireName = wire.instruction;
+    if ( typeof wires[ producerWireName ].value === 'undefined') { // it is another wire
+      circuits.makeValue(wires, wires[ producerWireName ]);
+      wire.value = wires[ producerWireName ].value;
+    }
   }
 };
 
 circuits.make_NOT_Value = function (wires, wire, instruction) {
-  if ( typeof wires[ instruction[1] ].value === 'undefined') {
-    circuits.makeValue(wires, wires[ instruction[1] ]);
+  let producerWireName = instruction[1];
+  if ( typeof wires[ producerWireName ].value === 'undefined') {
+    circuits.makeValue(wires, wires[ producerWireName ]);
   }
-  wire.value = ~(wires[ instruction[1] ].value);
+  wire.value = ~(wires[ producerWireName ].value);
 };
 
+circuits.makeShiftValue = function (wires, wire, instruction, direction) {
+  let producerWireName = instruction[0],
+      shiftValue = instruction[2];
+  if ( typeof wires [ producerWireName ].value === 'undefined') {
+    circuits.makeValue(wires, wires[ producerWireName ]);
+  }
+  if (direction === 'left') {
+    wire.value = wires[ producerWireName ].value << Number(shiftValue);
+  } 
+  else {
+    wire.value = wires[ producerWireName ].value >> Number(shiftValue);
+  }
+}
+
 circuits.make_LSHIFT_Value = function (wires, wire, instruction) {
-    if ( typeof wires [ instruction[0] ].value === 'undefined') {
-      circuits.makeValue(wires, wires[ instruction[0] ]);
-    }
-    wire.value = wires[ instruction[0] ].value << Number(instruction[2]);
+  circuits.makeShiftValue(wires, wire, instruction, 'left');
 };
 
 circuits.make_RSHIFT_Value = function (wires, wire, instruction) {
-    if ( typeof wires [ instruction[0] ].value === 'undefined') {
-      circuits.makeValue(wires, wires[ instruction[0] ]);
-    }
-    wire.value = wires[ instruction[0] ].value >> Number(instruction[2]);
+  circuits.makeShiftValue(wires, wire, instruction, 'right');
 };
 
-circuits.make_OR_Value = function (wires, wire, instruction) {
-    if ( typeof wires [ instruction[0] ].value === 'undefined') {
-      circuits.makeValue(wires, wires[ instruction[0] ]);
-    }
-    if ( typeof wires [ instruction[2] ].value === 'undefined') {
-      circuits.makeValue(wires, wires[ instruction[2] ]);
-    }
-    wire.value = wires[ instruction[0] ].value | wires[ instruction[2] ].value;
-};
-
-circuits.make_AND_Value = function (wires, wire, instruction) {
+circuits.makeAndOrValue = function (wires, wire, instruction, type) {
   let left;
   if ( !isNaN(instruction[0]) ) { // left operand is a simple number
     left = Number(instruction[0]);
   }
-  else if ( typeof wires [ instruction[0] ].value === 'undefined') {
-    circuits.makeValue(wires, wires[ instruction[0] ]);
-    left = wires[ instruction[0] ].value;
-  }
   else {
-    left = wires[ instruction[0] ].value;
+    let leftProducerWireName = instruction[0];
+    if ( typeof wires [ leftProducerWireName ].value === 'undefined') {
+      circuits.makeValue(wires, wires[ leftProducerWireName ]);
+    }
+    left = wires[ leftProducerWireName ].value;
   }
 
   let right;
   if ( !isNaN(instruction[2]) ) { // left operand is a simple number
     right = Number(instruction[2]);
   }
-  else if ( typeof wires [ instruction[2] ].value === 'undefined') {
-    circuits.makeValue(wires, wires[ instruction[2] ]);
-    right = wires[ instruction[2] ].value;
-  }
   else {
-    right = wires[ instruction[2] ].value;
+    let rightProducerWireName = instruction[2];
+    if ( typeof wires [ rightProducerWireName ].value === 'undefined') {
+      circuits.makeValue(wires, wires[ rightProducerWireName ]);
+    }
+    right = wires[ rightProducerWireName ].value;
   }
 
-  wire.value = left & right;
+  wire.value = (type === 'OR') ? left | right : left & right;
 };
+
+circuits.make_OR_Value = function (wires, wire, instruction) {
+  circuits.makeAndOrValue(wires, wire, instruction, 'OR');
+};
+
+circuits.make_AND_Value = function (wires, wire, instruction) {
+  circuits.makeAndOrValue(wires, wire, instruction, 'AND');
+};
+
 export default circuits;
