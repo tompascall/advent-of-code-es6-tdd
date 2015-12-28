@@ -1,6 +1,6 @@
-import lights from './day6_lights';
+import {SimpleLights, TrickyLights} from '../src/day6_lights';
 
-lights.initTable();
+let simpleLights = new SimpleLights();
 let input = `toggle 461,550 through 564,900
 turn off 370,39 through 425,839
 turn off 464,858 through 833,915
@@ -302,5 +302,9 @@ turn off 209,780 through 572,894
 turn on 766,112 through 792,868
 turn on 222,12 through 856,241`;
 
-lights.process(input);
-console.log(`There are ${lights.count()} lights switched on`);
+simpleLights.process(input);
+console.log(`There are ${simpleLights.count()} simple lights switched on.`);
+
+let trickyLights = new TrickyLights();
+trickyLights.process(input);
+console.log(`The total brightness of tricky lights is ${trickyLights.count()}.`);
