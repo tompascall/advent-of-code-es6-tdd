@@ -24,7 +24,6 @@ describe('test 8th puzzle', () => {
 
   it('should count the number of characters in string as input would be in memory', () => {
     let raw = String.raw`"a\"b\\c\xff"`;
-    console.log(raw);
     chars = new Chars(raw);
     expect(chars.counter().invert).to.equal(22); // 13 + 9
   });
