@@ -1,7 +1,6 @@
 export default class Las {
-  constructor ({input = '1', iter = 1} = {}) {
+  constructor ({input = '1'} = {}) {
     this.input = input;
-    this.iter = iter;
   }
 
   iterate (string) {
